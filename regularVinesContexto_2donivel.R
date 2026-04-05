@@ -11,8 +11,8 @@ library(ggraph)
 library(dplyr)
 library(igraph)
 
-datoscxto  <- read.csv2("ineed/Datos_Estudiantes_CXTO.csv")
-datoshse <- read.csv2("ineed/Datos_Estudiantes_HSE.csv")
+datoscxto<- read.csv2("https://www.ineed.edu.uy/images/BasesDeDatos/Aristas2018/Estudiantes/Contexto/Datos_Estudiantes_CXTO.csv")
+datoshse <- read.csv2("https://www.ineed.edu.uy/images/BasesDeDatos/Aristas2018/Estudiantes/Socioemocional/Datos_Estudiantes_HSE.csv")
 
 datosto<-left_join(datoscxto,datoshse)
 
@@ -57,9 +57,6 @@ datos_empE <- apply(datos_emp,   2, acumuladav)
 datos_empE2 <- apply(datos_emp, 2, acumuladavi)
 
 
-setwd("~/Dropbox/2022_Agustin/R")
-#load("arboldiscretas_2donivel.Rdata")
-
 fitd_gen <- vinecop(cbind(datos_genE, datos_genE2), family_set = "archimedean",tree_crit="tau",  var_types = rep("d", ncol(datos_gen)))
 fitd_div <- vinecop(cbind(datos_divE, datos_divE2), family_set = "archimedean",tree_crit="tau",  var_types = rep("d", ncol(datos_div)))
 fitd_emp <- vinecop(cbind(datos_empE, datos_empE2), family_set = "archimedean",tree_crit="tau",  var_types = rep("d", ncol(datos_emp)))
@@ -69,44 +66,6 @@ fitd_emp <- vinecop(cbind(datos_empE, datos_empE2), family_set = "archimedean",t
 contour(fitd_gen)
 contour(fitd_div)
 contour(fitd_emp)
-
-library(graphics)
-
-# Definición de colores
-col_var <- function(var) {
-  if (var %in% conserva) return("blue")
-  if (var %in% empatia) return("darkgreen")
-  if (var %in% noconserva) return("magenta")
-  return("black")
-}
-
-# Función wrapper para contour con títulos coloreados
-contour_colored <- function(fit, var_names) {
-  p <- length(var_names)
-  
-  op <- par(mfrow = c(p, p), mar = c(2,2,2,1))
-  
-  for (i in 1:p) {
-    for (j in 1:p) {
-      if (i == j) {
-        plot.new()
-        title(main = var_names[i], col.main = col_var(var_names[i]))
-      } else {
-        # esto depende del objeto fit, ajustalo si hace falta
-        contour(fit, which = c(i,j), add = FALSE)
-        
-        title(main = paste(var_names[i], "-", var_names[j]),
-              col.main = col_var(var_names[i]))
-      }
-    }
-  }
-  
-  par(op)
-}
-
-contour_colored(fitd_gen, genero)
-contour_colored(fitd_div, diversidad)
-contour_colored(fitd_emp, empatia)
 
 summary(fitd_gen)
 summary(fitd_div)
